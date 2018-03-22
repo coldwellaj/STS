@@ -1,0 +1,401 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>S.A.G.E. STS</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body>
+			<div id="loader-wrapper">
+				<div id="loader"></div>
+				<div class="loader-section section-left"></div>
+				<div class="loader-section section-right"></div>
+			</div>
+
+			<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+				<header id="header">
+					<div class="logo">
+					</div>
+					<div class="content">
+						<div class="inner">
+							<h1>S.A.G.E </br>Ticketing System</h1>
+							<p>Workflow Monitoring Made Easy
+							</p>
+						</div>
+					</div>
+					<!--Starting Menu-->
+					<nav id="StandardMenu">
+						<ul>
+							<li><a href="#Ticket">New</a></li>
+							<li id="loginLink"><a href="#login">Login</a></li>
+							<!--<li><a href="#elements">Elements</a></li>-->
+						</ul>
+					</nav>
+					<!--End user Menu -->
+					<nav id="UserMenu" style="display:none;"> 
+						<ul>
+							<li><a href="#Ticket">New</a></li>
+							<li class="ticketsLink" id="ticketCount"><a id="userTickets" href="#myTickets">Tickets</a></li>
+                            <li class="assignTickets" id="assignTickets"><a id="assignTech" onclick="getNewTickets()">Assign Tickets</a></li>
+						</ul>
+					</nav>
+					<!--S.A.G.E Tech Menu-->
+					<nav id="SageMenu" style="display:none;">
+						<ul>
+							<li><a href="#User">New User</a></li>
+							<li><a href="#passwordReset">UPR</a></li>
+							<li class="ticketsLink" id="ticketCount"><a id="heidenTickets" href="#myTickets">Tickets </a></li>
+							<li><a href="#siteConfigs">Site Configs</a></li>
+						</ul>
+					</nav>
+
+					<!--S.A.G.E Team Menu-->
+					<nav id="TeamMenu" style="display:none;">
+						<ul>
+							<li><a id="teamMembers" href="#viewMembers">View Team</a></li>
+							<li><a href="#addMember">Assign Technicians</a></li>
+						</ul>
+					</nav>
+
+					<!--S.A.G.E Admin Menu-->
+					<nav id="AdminMenu" style="display:none;">
+						<ul>
+							<!-- <li><a href="#createUser">Create New User</a></li> -->
+							<li><a href="#Team">Create Team</a></li>
+							<li><a id="allteams" href="#manageTeams">Manage Teams</a></li>
+						</ul>
+					</nav>
+				</header>
+
+				<!-- Main -->
+				<!--Login Form-->
+					<div id="main">
+							<article id="login">
+								<h2 class="major">Login</h2>
+								<form name="login" id="login" method="POST" action="#">
+									<div class="field">
+										<label for="email">User Name</label>
+										<input type="text" name="email" id="UserName" required/>
+									</div>
+									<div class="field">
+										<label for="Password">Password</label>
+										<input type="password" name="password" id="Password" required/>
+									</div>
+									<ul class="actions">
+										<li><input type="submit" value="Login" class="special" /></li>
+									</ul>
+								</form>
+							</article>
+
+							<!--Password reset-->
+							<article id="passwordReset">
+								<h2 class="major">Reset Password</h2>
+								<form name="reset_password" id="reset_password" method="POST" action="#">
+									<div class="field">
+										<label for="UserName">User Name</label>
+										<input type="text" name="UserName" id="UserName" required/>
+									</div>
+									<div class="field">
+										<label for="Password">Password</label>
+										<input type="text" name="Password" id="Password" required/>
+									</div>
+									<ul class="actions">
+										<li><input type="submit" value="Submit" class="special"/></li>
+									</ul>
+								</form>
+							</article>
+
+							<!--Notifications-->
+							<article id="ticketCreated">
+								<h1>Ticket Created</h1>
+							</article>
+							<article id="User_Created">
+								<h1>User Created</h1>
+							</article>
+							<article id="Team_Created">
+								<h1>Team Created</h1>
+							</article>
+							
+							<!--Tech Site Configs-->
+							<article id="siteConfigs">
+								<h1>Client Site Config List</h1>
+								<select id="clientList"><option>Select Client</option></select>
+								<hr>
+							</article>
+							
+						<!-- Time Entry
+						<article id="TimeEntry">
+							<h2 class="major" id="timeEntryTitle">Time Entry</h2>
+							<form method="post" action="#" id="New_Time_Entry" name="New_Time_Entry">
+								<div class="field half first">
+									<label for="StartTime">Start Time</label>
+									<input type="time" name="StartTime" id="StartTime" required/>
+								</div>
+								<div class="field half">
+									<label for="EndTime">End Time</label>
+									<input type="time" name="EndTime" id="EndTime" required/>
+								</div>
+								<div class="field">
+									<label for="Description">Description</label>
+									<textarea name="Description" id="Description" required></textarea>
+								</div>
+								<ul class="actions">
+										<li><input type="submit" value="Add Time" class="special" /></li>
+										<li><input type="reset" value="Clear" /></li>
+									</ul>
+							</form>
+						</article>-->
+				
+				<!--Tickets, both tech and end-->	
+				<article class="myTickets" id="myTickets">
+					<div class="head-wrapper">
+						<h2 class="major">Tickets</h2> <img id="refresh" class="image right" src="images/refresh.png"/>
+					</div>
+					<div class="table-wrapper" id="MyTickets">
+						
+					</div>
+				</article>
+
+				<!-- Time Entry -->
+				<article id="timeEntries">
+					<div class="table-wrapper" id="work">
+
+					</div>
+				</article>
+
+				<!-- Manage Teams, View Team Members, ect. -->
+				<article class="manageTeams" id="manageTeams">
+					<div class="head-wrapper">
+						<h2 class="major">Manage Teams</h2> <img id="refresh" class="image right" src="images/refresh.png"/>
+					</div>
+					<div class="table-wrapper" id="AllTeams">
+						
+					</div>
+				</article>
+				<article class="viewMembers" id="viewMembers">
+					<div class="head-wrapper">
+						<h2 class="major">My Team Members</h2> <img id="refresh" class="image right" src="images/refresh.png"/>
+					</div>
+					<div class="table-wrapper" id="MyMembers">
+						
+					</div>
+				</article>
+
+				<!-- Assign a Technician to a team -->
+				<article id="addMember">
+                    <h2 class="major">Assign Technician To My Team</h2>
+                	<form method="post" action="#" id="Assign_Tech_Team" name="Assign_Tech_Team">
+                        <div class="field first">
+                            <label for="userEmail">Technician Email</label>
+                            <input type="text" name="userEmail" id="userEmail" required>
+                        </div>
+                        <ul class="actions">
+                            <li><input type="submit" value="Assign Tech" class="special"></li>
+                        </ul>
+                    </form>
+                </article>
+
+
+				<!-- Edit Ticket form -->
+				<article id="editTicket">
+					<form method="post" action="#" id="Edit_Ticket" name="Edit_Ticket">
+						<div class="field">
+							<label for="EditTicketTitle">Department</label>
+							<input type="text" name="department" id="EditTicketTitle" required/>
+						</div>
+						
+						<div class="field">
+							<label for="details">Description</label>
+							<textarea name="details" id="EditTicketDescription" rows="4" required></textarea>
+						</div>
+						<div class="field half">
+							<label for="edit_start_date">Start Date</label>
+							<input type="date" name="start_date" id="edit_start_date"/>
+						</div>
+						<div class="field half">
+							<label for="edit_client_phone">Phone</label>
+							<input type="text" name="client_phone" id="edit_client_phone"/>
+						</div>
+						<div class="field half">
+							<label for="edit_end_date">End Date</label>
+							<input type="date" name="end_date" id="edit_end_date"/>
+						</div>
+						<div class="field half">
+							<label for="priority">Priority</label>
+							<select name="priority" id="EditPriority" required>
+								<option value = "0">Critical </option>
+								  <option value = "1" >High </option>
+								  <option value = "2" selected="selected">Medium </option>
+								  <option value = "3" >Low </option>
+							 </select> 
+						</div>
+						<div class="field half">
+							<label for="edit_status">Status</label>
+							<select name="status" id="edit_status" required>
+                                <option value="1">New</option>
+                                <option value="2">Assigned</option>
+                                <option value="3">Suspended</option>
+                                <option value="4">Closed</option>
+                            </select>
+						</div>
+                        <div class="field half">
+                            <label for="edit_resource">Resources</label>
+                            <textarea name="resource" id="edit_resource"></textarea>
+                        </div>
+						<ul class="actions">
+							<li><input type="submit" value="Update Ticket" class="special" /></li>
+							<li><input type="button" id="close_ticket" value="Close Ticket" /></li>
+						</ul>
+						</form>
+				</article>
+				<article id="Assign_Team_Lead">
+					<h2 class="major">Assign Team Leader</h2>
+					<form method="post" action="#" id="Assign_Lead" name="Assign_Lead">
+						<div class="field first">
+							<label for="userEmail">Technician Email</label>
+							<input type="text" name="newLead" id="newLead" required>
+						</div>
+						<ul class="actions">
+							<li><input type="submit" value="Assign Leader" class="special"></li>
+						</ul>
+					</form>
+				</article>
+                <!--Assign a Technician to ticket-->
+                <article id="techAssign">
+                    <h2 class="major">Assign Technician</h2>
+                    <form method="post" action="#" id="Assign_Tech" name="Assign_Tech">
+                        <div class="field first">
+                            <label for="userEmail">Technician Email</label>
+                            <input type="text" name="userEmail" id="userEmail" required>
+                        </div>
+                        <div class="field">
+                            <label for="ticketId">New Tickets</label>
+                            <select name="ticketId" id="ticketId" required>
+
+                            </select>
+                        </div>
+                        <ul class="actions">
+                            <li><input type="submit" value="Assign Tech" class="special"></li>
+                        </ul>
+                    </form>
+                </article>
+
+				<!-- New Ticket -->
+				<article id="Ticket">
+					<h2 class="major">New Ticket</h2>
+					<form method="post" action="#" id="New_Ticket" name="New_Ticket">
+						<div class="field first">
+							<label for="client_id">Client ID</label>
+							<input type="text" name="client_id" id="client_id" required/>
+						</div>
+						
+						<div class="field">
+							<label for="details">Describe Issue</label>
+							<textarea name="details" id="details" rows="4" required></textarea>
+						</div>
+						
+						<div class="field half">
+							<label for="department">Department</label>
+							<input type="text" name="department" id="department"/>
+						</div>
+						
+						<div class="field half">
+							<label for="priority">Priority</label>
+							<select name="priority" id="Priority" required>
+								<option value = "0">Critical </option>
+									<option value = "1" >High </option>
+									<option value = "2" selected="selected">Medium </option>
+									<option value = "3" >Low </option>
+								</select> 
+						</div>
+                        <div class="field half">
+                            <label for="status">Status</label>
+                            <select name="status" id="status" required>
+                                <option value="1">New</option>
+                                <option value="2">Assigned</option>
+                                <option value="3">Suspended</option>
+                                <option value="4">Closed</option>
+                            </select>
+                        </div>
+                        <div class="field half">
+                            <label for="resource">Resources</label>
+                            <textarea name="resource" id="resource"></textarea>
+                        </div>
+						<ul class="actions">
+							<li><input type="submit" value="Submit Ticket" class="special" /></li>
+							<li><input type="reset" value="Reset Ticket" /></li>
+						</ul>
+					</form>	
+				</article>
+
+				<!--Create New User form-->
+				<article id="User">
+					<h2 class="major">New User</h2>
+					<form method="post" action="#" id="New_User" name="New_User">
+						<div class="field half">
+							<label for="First">First Name</label>
+							<input type="text" name="First" id="First"/>
+						</div>
+						<div class="field half">
+							<label for="Last">Last Name</label>
+							<input type="text" name="Last" id="Last"/>
+						</div>
+						<div class="field half">
+							<label for="Email">Email</label>
+							<input type="email" name="Email" id="Email"/>
+						</div>
+						<div class="field half">
+							<label for="Account">Account</label>
+							<select name="Account" id="Account" >
+								<option>Select Account</option>
+								</select>
+						</div>
+						<ul class="actions">
+							<li><input type="submit" value="Create User" class="special" /></li>
+							<li><input type="reset" value="Reset Form" /></li>
+						</ul>
+					</form>
+				</article>
+
+				<!-- Create New Team form -->
+				<article id="Team">
+					<h2 class="major">New Team</h2>
+					<form method="post" action="#" id="New_Team" name="New_Team">
+						<div class="field first">
+							<label for="Name">Team Name</label>
+							<input type="text" name="Name" id="Name"/>
+						</div>
+						<div class="field">
+							<label for="Leader">Team Leader</label>
+							<input type="text" name="Leader" id="Leader"/>
+						</div>
+						<ul class="actions">
+							<li><input type="submit" value="Create Team" class="special" /></li>
+							<li><input type="reset" value="Reset Form" /></li>
+						</ul>
+					</form>
+				</article>
+			</div>
+
+			<!-- Footer -->
+			<footer id="footer">
+			</footer>
+
+		</div>
+
+		<!-- BG -->
+			<div id="bg"></div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+	</body>
+</html>

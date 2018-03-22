@@ -1,0 +1,14 @@
+{
+  "name": "heiden-app",
+  "version": "1.0.0",
+  "description": "Support desk for technicians and clients",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gage Beckett <gbeckett@heidentech.com> (http://heidentechnologysolutions.com)",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.4"
+  }
+}
