@@ -68,6 +68,26 @@
         <servlet-name>TeamUserList</servlet-name>
         <servlet-class>TeamUserList</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetClient</servlet-name>
+        <servlet-class>GetClient</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UserForm</servlet-name>
+        <servlet-class>UserForm</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UserUpdate</servlet-name>
+        <servlet-class>UserUpdate</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SurveyAnswerForm</servlet-name>
+        <servlet-class>SurveyAnswerForm</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ClientList</servlet-name>
+        <servlet-class>ClientList</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HelloForm</servlet-name>
         <url-pattern>/HelloForm</url-pattern>
@@ -135,6 +155,26 @@
     <servlet-mapping>
         <servlet-name>TeamUserList</servlet-name>
         <url-pattern>/TeamUserList</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetClient</servlet-name>
+        <url-pattern>/GetClient</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserForm</servlet-name>
+        <url-pattern>/UserForm</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserUpdate</servlet-name>
+        <url-pattern>/UserUpdate</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SurveyAnswerForm</servlet-name>
+        <url-pattern>/SurveyAnswerForm</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ClientList</servlet-name>
+        <url-pattern>/ClientList</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

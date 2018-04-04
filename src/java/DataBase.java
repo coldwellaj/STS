@@ -211,6 +211,41 @@ public class DataBase {
         return users;
     }
     
+         /**
+     *
+     * @param user_id
+     * @return
+     */
+    public static ArrayList<Client> getClients() {
+        ArrayList<Client> clients = new ArrayList<>();
+        try {
+            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+            Connection con = DriverManager.getConnection(jdbcURL,uName,uPassword);
+            
+            Statement stmt = con.createStatement();
+            String SQL = "SELECT * FROM clients";
+            ResultSet rs = stmt.executeQuery(SQL);
+            
+            while(rs.next()){
+                Client hold = new Client();
+                hold.setFName(rs.getString("first_name"));
+                hold.setLName(rs.getString("last_name"));
+                hold.setId(rs.getInt("id"));
+                hold.setEmail(rs.getString("email"));
+                hold.setPhone(rs.getString("phone"));
+                
+                clients.add(hold);
+            }
+            
+            
+            con.close();
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+       
+        return clients;
+    }
+    
     /**
      *
      * @param user_id
@@ -373,7 +408,7 @@ public class DataBase {
             Statement stmt = con.createStatement();
              String query = " insert into tickets (priority, start_date, "
                      + "end_date, details, department, client_id, "
-                     + "status, title resource) values"
+                     + "status, title, resource) values"
                      + " (?, ?, ?, ?, ?, ?, ?, ?, ?)";
              PreparedStatement preparedStmt = con.prepareStatement(query);
              preparedStmt.setInt(1, newTicket.getPriority());
@@ -382,8 +417,8 @@ public class DataBase {
              preparedStmt.setString(4,newTicket.getDetails());
              preparedStmt.setString(5,newTicket.getQueue());
              preparedStmt.setString(6,newTicket.getClientId());
-             preparedStmt.setString(7,newTicket.getTicketTitle());
-             preparedStmt.setString(8,"1");
+             preparedStmt.setString(7,"1");
+             preparedStmt.setString(8,newTicket.getTicketTitle());
              preparedStmt.setString(9,newTicket.getResource());
              
             preparedStmt.execute();
@@ -568,4 +603,149 @@ public class DataBase {
             return false;
         }
     }
+    
+    /**
+     *
+     * @param ClientId
+     * @return
+     */
+    public static Client getClient(String clientId) {
+        Client hold = new Client();
+        try {
+            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+            Connection con = DriverManager.getConnection(jdbcURL,uName,uPassword);
+            
+            Statement stmt = con.createStatement();
+            String SQL = "SELECT * FROM clients WHERE id = '" + clientId + "'";
+            ResultSet rs = stmt.executeQuery(SQL);
+            
+            while (rs.next()) {
+                hold.setId(rs.getInt("id"));
+                hold.setEmail(rs.getString("email"));
+                hold.setFName(rs.getString("first_name"));
+                hold.setLName(rs.getString("last_name"));
+                hold.setPhone(rs.getString("phone"));
+            }
+            
+            
+            con.close();
+            
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+       
+        return hold;
+    }
+    
+    /**
+     *
+     * @param newUser
+     * @return
+     */
+    public static String addNewUser(User newUser) {
+         try {
+            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+            Connection con = DriverManager.getConnection(jdbcURL,uName,uPassword);
+            
+            Statement stmt = con.createStatement();
+            String SQL = "SELECT * FROM clients WHERE email = '" + newUser.getEmail() + "'";
+            ResultSet rs = stmt.executeQuery(SQL);
+            
+            if (rs.isBeforeFirst()){
+                return "The email: " + newUser.getEmail() + " has already been taken";
+            }
+            else{
+                con.close();
+                con = DriverManager.getConnection(jdbcURL,uName,uPassword);
+                stmt = con.createStatement();
+                String query = " insert into users (email, password, "
+                         + "user_type, first_name, last_name, department) values"
+                         + " (?, ?, ?, ?, ?, ?)";
+                 PreparedStatement preparedStmt = con.prepareStatement(query);
+                 preparedStmt.setString(1, newUser.getEmail());
+                 preparedStmt.setString(2,newUser.getPassword());
+                 preparedStmt.setString(3,newUser.getUserType());
+                 preparedStmt.setString(4,newUser.getFirstName());
+                 preparedStmt.setString(5,newUser.getLastName());
+                 preparedStmt.setString(6,newUser.getDepartment());
+
+                preparedStmt.execute();
+                con.close();
+
+                return "true";
+            }
+            
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            return ex.getMessage();
+            
+        }
+     }
+    
+     /**
+     *
+     * @param ticket
+     * @return
+     */
+    public static boolean updateUser(User user) {
+         try {
+            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+            Connection con = DriverManager.getConnection(jdbcURL,uName,uPassword);
+            
+            Statement stmt = con.createStatement();
+             String query = " update users set email =?, user_type = ?, "
+                     + "first_name = ?, last_name = ?, department = ? "
+                     + " where id = ?";
+             PreparedStatement preparedStmt = con.prepareStatement(query);
+             preparedStmt.setString(1, user.getEmail());
+             preparedStmt.setString(2,user.getUserType());
+             preparedStmt.setString(3,user.getFirstName());
+             preparedStmt.setString(4,user.getLastName());
+             preparedStmt.setString(5,user.getDepartment());
+             preparedStmt.setString(6,user.getId());
+             
+            preparedStmt.execute();
+            con.close();
+            
+            return true;
+            
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            return false;
+        }
+     }
+    
+    /**
+     *
+     * @param newAnswer
+     * @return
+     */
+    public static boolean addSurveyEntry(SurveyAnswer newAnswer) {
+         try {
+            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+            Connection con = DriverManager.getConnection(jdbcURL,uName,uPassword);
+            
+            Statement stmt = con.createStatement();
+             String query = " insert into survey (ticket_id, "
+                     + "client_id, q1, q2, q3, q4) values"
+                     + " (?, ?, ?, ?, ?, ?)";
+             PreparedStatement preparedStmt = con.prepareStatement(query);
+             preparedStmt.setInt(1, newAnswer.getTicketId());
+             preparedStmt.setInt(2,newAnswer.getClientId());
+             preparedStmt.setString(3,newAnswer.getQuestion1());
+             preparedStmt.setString(4,newAnswer.getQuestion2());
+             preparedStmt.setString(5,newAnswer.getQuestion3());
+             preparedStmt.setString(6,newAnswer.getQuestion4());
+             
+            preparedStmt.execute();
+            con.close();
+            
+            return true;
+            
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            return false;
+            
+        }
+     }
 }

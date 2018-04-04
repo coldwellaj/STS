@@ -33,6 +33,7 @@ public class LoginForm extends HttpServlet {
         boolean login = false;
         if (hold.getPassword().equals(request.getParameter("password"))) {
             login = true;
+            //EmailServer.LoginNotifyEmail(hold.getEmail());
         }
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
