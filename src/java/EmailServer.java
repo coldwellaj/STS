@@ -20,28 +20,19 @@ import javax.mail.internet.MimeMessage;
  * @author Coldwellaj
  */
 public class EmailServer {
+    private static Properties props = System.getProperties();
     
     public static void LoginNotifyEmail(String email){
         try{
-
-        Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com"); // for gmail use smtp.gmail.com
         props.put("mail.smtp.auth", "true");
-        props.put("mail.debug", "true"); 
         props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.port", "465");
-        props.put("mail.smtp.socketFactory.port", "465");
-        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        props.put("mail.smtp.socketFactory.fallback", "false");
+        props.put("mail.smtp.port", "587");
+//        props.put("mail.smtp.user", "sagests310@gmail");
+//        props.put("mail.smtp.password", "219907aJ1");
+        
 
-        Session mailSession = Session.getInstance(props, new javax.mail.Authenticator() {
-
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("sagests310@gmail", "219907aJ1");
-            }
-        });
-
-        mailSession.setDebug(true); // Enable the debug mode
+        Session mailSession = Session.getInstance(props);
 
         Message msg = new MimeMessage( mailSession );
 
@@ -55,12 +46,93 @@ public class EmailServer {
         msg.setText( "Hello this email is to inform you that an attempt to login" 
         + " using your account has been made");
 
-        //--[ Ask the Transport class to send our mail message
-        Transport.send( msg );
+        //--[ Create transport object
+        Transport transport = mailSession.getTransport("smtp");
+        transport.connect("sagests310", "Hell0w0rld");
+        transport.sendMessage(msg, msg.getAllRecipients());
+        transport.close();
+        
 
     }catch(Exception E){
         System.out.println( "Oops something has gone pearshaped!");
         System.out.println( E );
+    }
+    }
+    
+    public static boolean ContactClient(String clientEmail, String subject, String message){
+        try{
+        props.put("mail.smtp.host", "smtp.gmail.com"); // for gmail use smtp.gmail.com
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.port", "587");
+//        props.put("mail.smtp.user", "sagests310@gmail");
+//        props.put("mail.smtp.password", "219907aJ1");
+        
+
+        Session mailSession = Session.getInstance(props);
+
+        Message msg = new MimeMessage( mailSession );
+
+        //--[ Set the FROM, TO, DATE and SUBJECT fields
+        msg.setFrom( new InternetAddress( "admin@sage.com" ) );
+        msg.setRecipients( Message.RecipientType.TO,InternetAddress.parse(clientEmail) );
+        msg.setSentDate( new Date());
+        msg.setSubject( subject );
+
+        //--[ Create the body of the mail
+        msg.setText(message);
+
+        //--[ Create transport object
+        Transport transport = mailSession.getTransport("smtp");
+        transport.connect("sagests310", "Hell0w0rld");
+        transport.sendMessage(msg, msg.getAllRecipients());
+        transport.close();
+        return true;
+        
+
+    }catch(Exception E){
+        System.out.println( "Oops something has gone pearshaped!");
+        System.out.println( E );
+        return false;
+    }
+    }
+    
+    public static boolean SendSurvey(Client client, Ticket ticket){
+        try{
+        props.put("mail.smtp.host", "smtp.gmail.com"); // for gmail use smtp.gmail.com
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.port", "587");
+//        props.put("mail.smtp.user", "sagests310@gmail");
+//        props.put("mail.smtp.password", "219907aJ1");
+        
+
+        Session mailSession = Session.getInstance(props);
+
+        Message msg = new MimeMessage( mailSession );
+
+        //--[ Set the FROM, TO, DATE and SUBJECT fields
+        msg.setFrom( new InternetAddress( "admin@sage.com" ) );
+        msg.setRecipients( Message.RecipientType.TO,InternetAddress.parse(client.getEmail()) );
+        msg.setSentDate( new Date());
+        msg.setSubject( "Closing of ticket: " + ticket.getTicketTitle());
+
+        //--[ Create the body of the mail
+        msg.setText("Your ticket titled: " + ticket.getTicketTitle() + " has been completed."
+        + " Please feel free to fill out the survey below. /n ");
+
+        //--[ Create transport object
+        Transport transport = mailSession.getTransport("smtp");
+        transport.connect("sagests310", "Hell0w0rld");
+        transport.sendMessage(msg, msg.getAllRecipients());
+        transport.close();
+        return true;
+        
+
+    }catch(Exception E){
+        System.out.println( "Oops something has gone pearshaped!");
+        System.out.println( E );
+        return false;
     }
     }
 }

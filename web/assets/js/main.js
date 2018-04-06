@@ -219,28 +219,7 @@ $('#userTickets').on('click',function(){
                 })
             }
         });
-        $('#New_User').on('submit',function(e){
-            e.preventDefault();
-            if(sessionStorage.getItem('status') != "loggedIn"){
-                window.location.href="#";
-            }else{
-                var f = $('form[name=New_User]').serialize();
 
-                var url = "http://10.200.200.187/sage_app/New_User.php?" + f + "&format=json&callback=?";
-                $('body').addClass('loading');
-                $.getJSON(url, function(data){
-                    $('body').removeClass('loading');
-                    $('body').addClass('loaded');
-                    if(data[0].ATCreated == true){
-                        var created = document.createElement('h2');
-                        created.innerHTML=data[0].SQLCreated;
-                        $('#User_Created').append(created);
-                        window.location.href = "#User_Created";
-
-                    }
-                })
-            }
-        });
         // create new team submission
         $('#New_Team').on('submit', function(e) {
             e.preventDefault();
@@ -676,10 +655,17 @@ function getTickets(){
     var url = "http://sagests.us.to:8080/STS/TicketList?user="+userID+"&format=json&callback=?";
     sessionStorage.setItem('TicketNumber', 'null');//create empty session variable.
     $('#MyTickets').remove();//clear the article to make way for the new information
+    $('#LateTickets').remove();//clear the article to make way for the new information
+
     var wrapper = document.createElement('div');
     wrapper.setAttribute('class','table-wrapper');
     wrapper.setAttribute('id','MyTickets');
     $('#myTickets').append(wrapper);
+
+    var wrapper2 = document.createElement('div');
+    // wrapper2.setAttribute('class','table-wrapper');
+    wrapper2.setAttribute('id','LateTickets');
+    $('#myTickets').append(wrapper2);
 
     $.getJSON(url, function(data){
         //Create the table and the table headers
@@ -687,25 +673,34 @@ function getTickets(){
         $('body').removeClass('loading');
         $('body').removeClass('loaded');
         var table = document.createElement("table");
+        var table2 = document.createElement("table");
         var thead = document.createElement("thead");
         var row = document.createElement("tr");
         var col = document.createElement("td");
         var col2 = document.createElement("td");
         var col3 = document.createElement("td");
+        var col4 = document.createElement("td");
         var noTickets = false;
         /* if(data[0].TicketNumber.toUpperCase() === 'NO OPEN TICKETS'){
             col.innerHTML="No Open Tickets";
             noTickets=true;
-        }else */{
+        }else */
+        if(data.length > 0) {
             col.innerHTML="Ticket Number";
-            col2.innerHTML="Due Date";
-            col3.innerHTML="Description";
+            col2.innerHTML="Client Email";
+            col3.innerHTML="Due Date";
+            col4.innerHTML="Description";
+        } else {
+            col.innerHTML="No Open Tickets";
+            noTickets = true;
         }
         row.appendChild(col);
         row.appendChild(col2);
         row.appendChild(col3);
+        row.appendChild(col4);
         thead.appendChild(row);
-        table.appendChild(thead);
+        table.appendChild(thead.cloneNode(true));
+        table2.appendChild(thead.cloneNode(true));
         //loop throught the tickets and add them to the table
         if(!noTickets){
             for(var i=0;i<data.length;i++){
@@ -713,14 +708,20 @@ function getTickets(){
                 var col = document.createElement("td");
                 var col2 = document.createElement("td");
                 var col3 = document.createElement("td");
+                var col4 = document.createElement("td");
                 //only enter this part of the tickets if it is a new ticket
                 //to add the correct time entries to the correct tickets
                 if(data[i].TicketNumber !== sessionStorage.getItem('TicketNumber')){
                     sessionStorage.setItem('TicketNumber', data[i].TicketNumber);
                     numbers[i]=data[i].TicketNumber;
+
+                    var client = getClient(data[i].ClientId);
+                    console.log(client);
+
                     col.innerHTML = data[i].TicketID;
-                    col2.innerHTML = data[i].StartDate;
-                    col3.innerHTML = data[i].Detail;
+                    col2.innerHTML = data[i].ClientId;
+                    col3.innerHTML = data[i].EndDate;
+                    col4.innerHTML = data[i].Detail;
                     //listen for the click of the row to see the time entries
                     row.addEventListener('click',function(){
                         var arg = this.firstChild.innerHTML;
@@ -730,7 +731,17 @@ function getTickets(){
                     row.appendChild(col);
                     row.appendChild(col2);
                     row.appendChild(col3);
-                    table.appendChild(row);
+                    row.appendChild(col4);
+
+                    var today = new Date();
+                    var endDate = new Date(data[i].EndDate);
+                    if(endDate < today) {
+                        table2.appendChild(row);
+                    } else {
+                        table.appendChild(row);
+                    }
+
+                    // table.appendChild(row);
                     times[i]=data[i].TimeEntry;
                     numbers[i]=data[i].TicketNumber;
                     dateWorked[i]=data[i].DateWorked;
@@ -746,10 +757,43 @@ function getTickets(){
             /* var timeEntries = {TicketNumber:numbers, time:times, date:dateWorked};
             sessionStorage.setItem('TimeEntries',JSON.stringify(timeEntries)); */
         }
+        if($('#MyTickets tr').length <= 0) {
+            row = document.createElement("tr");
+            col = document.createElement("td");
+            col2 = document.createElement("td");
+            col3 = document.createElement("td");
+            col.innerHTML="No Open Tickets";
+            row.appendChild(col);
+            row.appendChild(col2);
+            row.appendChild(col3);
+            table.appendChild(row);
+        } else if($('#LateTickets tr').length <= 0) {
+            row = document.createElement("tr");
+            col = document.createElement("td");
+            col2 = document.createElement("td");
+            col3 = document.createElement("td");
+            col.innerHTML="No Late Tickets";
+            row.appendChild(col);
+            row.appendChild(col2);
+            row.appendChild(col3);
+            table2.appendChild(row);
+        }
+
         $('#MyTickets').append(table);
+        $('#LateTickets').append(table2);
+        $('#LateTickets thead tr').addClass('late');
+
         $('body').css({'counter-reset':'ticket-count '+ z});
         return;
     })
+}
+
+function getClient(id) {
+    var url = "http://sagests.us.to:8080/STS/GetClient?ClientId="+id+"&format=json&callback=?";
+    var client = $.getJSON(url, function(data){
+        console.log(data);
+    });
+    return client;
 }
 
 function editTicket(id){
@@ -934,6 +978,7 @@ function getSageTickets(){
             var col2 = document.createElement("td");
             var col3 = document.createElement("td");
             if(data[i].TicketNumber !== sessionStorage.getItem('TicketNumber')){
+                console.log(data[i]);
                 sessionStorage.setItem('TicketNumber', data[i].TicketNumber);
                 numbers[i]=data[i].TicketNumber;
                 col.innerHTML = data[i].TicketNumber;
@@ -1158,7 +1203,6 @@ function getTeamMembers() {
                     var col2 = document.createElement("td");
                     var col3 = document.createElement("td");
                     // var noMembers = false;
-
                     col.innerHTML="First Name";
                     col2.innerHTML="Last Name";
                     col3.innerHTML="Email";
@@ -1208,6 +1252,157 @@ function getTeamMembers() {
     return;
 }
 
+$('#allusers').on('click',function(){
+    window.location.href = "#manageteams";
+    $('#AllUsers').html('');
+    
+    getUsers();
+});
+
+function getUsers() {
+    $('body').addClass('loading');
+    $('#AllAdmins').remove();
+    $('#AllLeaders').remove();
+    $('#AllUsers').remove();
+
+    var wrapper = document.createElement('div');
+    wrapper.setAttribute('class','table-wrapper');
+    wrapper.setAttribute('id','AllAdmins');
+
+    var wrapper2 = document.createElement('div');
+    wrapper2.setAttribute('id','AllLeaders');
+
+    var wrapper3 = document.createElement('div');
+    wrapper3.setAttribute('id','AllUsers');
+
+    $('#manageUsers').append(wrapper);
+    $('#manageUsers').append(wrapper2);
+    $('#manageUsers').append(wrapper3);
+
+    var url = "http://sagests.us.to:8080/STS/UserList?format=json&callback=?";
+    $.getJSON(url, function(data) {
+        //Create the table and the table headers
+        $('body').addClass('loaded');
+        $('body').removeClass('loading');
+        $('body').removeClass('loaded');
+
+        var table = document.createElement("table");
+        var table2 = document.createElement("table");
+        var table3 = document.createElement("table");
+
+        var thead = document.createElement("thead");
+        var row = document.createElement("tr");
+        var col = document.createElement("td");
+        var col2 = document.createElement("td");
+        var col3 = document.createElement("td");
+        var col4 = document.createElement("td");
+        var col5 = document.createElement("td");
+        // var noMembers = false;
+
+        col.innerHTML = "ID";
+        col2.innerHTML = "Name";
+        col3.innerHTML = "Email";
+        col4.innerHTML = "Account Level";
+        col5.innerHTML = "Department";
+
+        row.appendChild(col);
+        row.appendChild(col2);
+        row.appendChild(col3);
+        row.appendChild(col4);
+        row.appendChild(col5);
+        thead.appendChild(row);
+        table.appendChild(thead.cloneNode(true));
+        table2.appendChild(thead.cloneNode(true));
+        table3.appendChild(thead.cloneNode(true));
+
+        //loop throught the members and add them to the table
+        // if(!noUsers){
+        for(var i=0;i<data.length;i++){
+            var row = document.createElement("tr");
+            var col = document.createElement("td");
+            var col2 = document.createElement("td");
+            var col3 = document.createElement("td");
+            var col4 = document.createElement("td");
+            var col5 = document.createElement("td");
+            row.onclick = function(){
+                manageUser($(this).find('td'));
+            };
+            col.innerHTML = data[i].UserID;
+            col2.innerHTML = data[i].FirstName + " " + data[i].LastName;
+            col3.innerHTML = data[i].Email;
+            if(data[i].UserType == 'user') {
+                col4.innerHTML = "Technician";
+            } else if(data[i].UserType == 'leader') {
+                col4.innerHTML = "Team Leader";
+            } else if(data[i].UserType == 'admin') {
+                col4.innerHTML = "Administrator";
+            }
+            col5.innerHTML = data[i].Department;
+            // col.addEventListener('click', function(e){
+            //     var teamName = $(this).html();
+            //     assignTeamLeader(teamName);
+            //     window.location.href="#Assign_Team_Lead";
+            // });
+            
+            row.appendChild(col);
+            row.appendChild(col2);
+            row.appendChild(col3);
+            row.appendChild(col4);
+            row.appendChild(col5);
+
+            if(data[i].UserType == 'user') {
+                table3.appendChild(row);
+            } else if(data[i].UserType == 'leader') {
+                table2.appendChild(row);
+            } else if(data[i].UserType == 'admin') {
+                table.appendChild(row);
+            }
+        }
+        console.log('tables');
+        console.log(table);
+        console.log(table2);
+        console.log(table3);
+        console.log('done');
+        $('#AllUsers').html('');
+        $('#AllLeaders').html('');
+        $('#AllAdmins').html('');
+
+        $('#AllUsers').append(table3);
+        $('#AllLeaders').append(table2);
+        $('#AllAdmins').append(table);
+    });
+}
+function manageUser(user){
+    $('.Update_First').val(user[1].innerHTML.substr(0, user[1].innerHTML.indexOf(" ")));
+    $('.Update_Last').val(user[1].innerHTML.substr(user[1].innerHTML.indexOf(" "), user[1].length));
+    $('.Update_Email').val(user[2].innerHTML);
+    sessionStorage.setItem("Update_ID", user[0].innerHTML);
+    window.location.href = '#manageUser';
+}
+
+$("#Update_User").submit(function(e){
+    e.preventDefault();
+    var f = $(this).serialize();
+
+    var url = "http://sagests.us.to:8080/STS/UserUpdate?id="+ sessionStorage.getItem("Update_ID") + "&" + f + "&callback=?";
+    $('body').addClass('loading');
+
+    $.getJSON(url, function (data) {
+        console.log(data[0]);
+        if(data[0].Submission == true){
+
+            alert("User Updated");
+            window.location.href="#manageUsers";
+        }else{
+            alert("User Not updated")
+        }
+        $('body').addClass("loaded");
+        $('body').removeClass("loading");
+        $('body').removeClass("loaded");
+        getUsers();
+    });
+
+});
 $('#allteams').on('click',function(){
     window.location.href = "#manageteams";
     $('#AllTeams').html('');
@@ -1216,9 +1411,12 @@ $('#allteams').on('click',function(){
 });
 
 function getTeams() {
-    console.log("in all teams");
-
     $('body').addClass('loading');
+    $('#AllTeams').remove();
+    var wrapper = document.createElement('div');
+    wrapper.setAttribute('class','table-wrapper');
+    wrapper.setAttribute('id','AllTeams');
+    $('#manageTeams').append(wrapper);
 
     var url = "http://sagests.us.to:8080/STS/TeamList?format=json&callback=?";
 
@@ -1318,4 +1516,46 @@ $('#Assign_Lead').submit(function (e) {
         $('body').removeClass('loading');
         $('body').addClass('loaded');
     });
+});
+
+$('#createuser').on('click',function(){
+    window.location.href = "#User";
+});
+
+$('#New_User').submit(function(e){
+    e.preventDefault();
+    if(sessionStorage.getItem('status') != 'loggedIn') {
+        window.location.href="#";
+    } else {
+        var f = $('form[name=New_User]').serialize();
+        console.log(f);
+        var url = "http://sagests.us.to:8080/STS/UserForm?"+f+"&format=json&callback=?";
+        console.log(url);
+        $('body').addClass('loading');
+
+        $.getJSON(url, function(data) {
+            if(data[0].Submission == "true"){
+                window.location = "#User_Created";
+                $('body').addClass("loaded");
+                $('body').removeClass('loading')
+                $('body').removeClass('loaded')
+                resetForm($('#New_User'));
+            } else {
+                $('body').addClass("loaded");
+                $('body').removeClass('loading')
+                $('body').removeClass('loaded');
+                resetForm($('#New_User'));
+                alert("User not created successfully. If you continue to have this issue, please call the support desk");
+            }
+        });
+    }
+});
+
+$('#Contact_Client').submit(function(e){
+    $("body").addClass('loading');
+    e.preventDefault();
+    console.log('clicked again');
+    $('body').removeClass('loading');
+    $('body').addClass('loaded');
+    window.location.href="#";
 });

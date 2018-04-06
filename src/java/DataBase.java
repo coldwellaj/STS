@@ -22,7 +22,7 @@ public class DataBase {
     static String jdbcURL = "jdbc:mysql://sagests.heliohost.org/ajcoldwe_sage"
             + "?zeroDateTimeBehavior=convertToNull";
     static String uName = "ajcoldwe_root";
-    static String uPassword = "219907aJ1";
+    static String uPassword = "219907aJ1";    
     
     /**
      *
@@ -175,7 +175,7 @@ public class DataBase {
         return tickets;
     }
     
-     /**
+    /**
      *
      * @param user_id
      * @return
@@ -211,7 +211,7 @@ public class DataBase {
         return users;
     }
     
-         /**
+    /**
      *
      * @param user_id
      * @return
@@ -294,7 +294,7 @@ public class DataBase {
         return users;
     }
     
-     /**
+    /**
      *
      * @param user_id
      * @return
@@ -483,6 +483,15 @@ public class DataBase {
              
             preparedStmt.execute();
             con.close();
+            
+            if (status == "4") {
+                Client client = new Client();
+                Ticket ticket = new Ticket();
+                ticket = getTicket(id);
+                client = getClient(ticket.getClientId());
+                
+                EmailServer.SendSurvey(client, ticket);
+            }
             
             return true;
             

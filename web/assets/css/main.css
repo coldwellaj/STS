@@ -1746,3 +1746,8 @@
 		.hide{
 			display:none;
 		}
+
+
+.late {
+	color: red;
+}
